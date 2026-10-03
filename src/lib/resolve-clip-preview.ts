@@ -83,10 +83,12 @@ export function enrichClipPreview<T extends Record<string, any>>(payload: T): T 
   }
 
   // data: thumbs stay in thumbnail-registry / assets store; Video looks them up by name
-  const nextMeta = { ...(payload.metadata || {}) };
+  const next = { ...payload } as T & { preview?: string; metadata?: Record<string, unknown> };
+  const nextMeta = { ...(next.metadata || {}) };
   if (typeof nextMeta.previewUrl === "string" && nextMeta.previewUrl.startsWith("data:")) {
     delete nextMeta.previewUrl;
   }
-  const { preview: _drop, ...rest } = payload as T & { preview?: string };
-  return { ...rest, metadata: nextMeta } as T;
+  delete next.preview;
+  next.metadata = nextMeta;
+  return next;
 }
